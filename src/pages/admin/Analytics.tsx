@@ -5,16 +5,16 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Eye, MousePointerClick, Calendar, TrendingUp } from 'lucide-react';
+import { Eye, MousePointerClick, Calendar, TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { formatDate } from '@/lib/formatters';
+import { motion } from 'framer-motion';
 
-const COLORS = ['hsl(38, 92%, 50%)', 'hsl(222, 47%, 11%)', 'hsl(210, 40%, 96%)', 'hsl(0, 84%, 60%)'];
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--success))', 'hsl(var(--secondary))'];
 
 export default function Analytics() {
   const { user } = useAuth();
   const { data: listings } = useAdminListings();
 
-  // Fetch events for analytics
   const { data: events } = useQuery({
     queryKey: ['analytics-events', user?.id],
     queryFn: async () => {
@@ -31,18 +31,15 @@ export default function Analytics() {
     enabled: !!user && !!listings?.length,
   });
 
-  // Calculate stats
   const totalViews = events?.filter(e => e.event_type === 'page_view').length || 0;
   const totalClicks = events?.filter(e => e.event_type === 'contact_click' || e.event_type === 'schedule_showing').length || 0;
   const outboundClicks = events?.filter(e => e.event_type === 'outbound_click').length || 0;
 
-  // Views by listing
   const viewsByListing = listings?.map(listing => ({
     name: listing.title.length > 20 ? listing.title.substring(0, 20) + '...' : listing.title,
     views: events?.filter(e => e.listing_id === listing.id && e.event_type === 'page_view').length || 0,
   })).sort((a, b) => b.views - a.views).slice(0, 5) || [];
 
-  // Referrer breakdown
   const referrerCounts: Record<string, number> = {};
   events?.forEach(e => {
     if (e.referrer) {
@@ -62,7 +59,6 @@ export default function Analytics() {
     .slice(0, 5)
     .map(([name, value]) => ({ name, value }));
 
-  // UTM Source breakdown
   const utmCounts: Record<string, number> = {};
   events?.forEach(e => {
     const utm = e.utm_json as Record<string, string> | null;
@@ -76,7 +72,6 @@ export default function Analytics() {
     .slice(0, 5)
     .map(([name, value]) => ({ name, value }));
 
-  // Device breakdown
   const deviceCounts: Record<string, number> = { mobile: 0, desktop: 0 };
   events?.forEach(e => {
     const device = e.device_json as Record<string, string> | null;
@@ -87,213 +82,323 @@ export default function Analytics() {
 
   const deviceData = Object.entries(deviceCounts).map(([name, value]) => ({ name, value }));
 
-  // Recent events
   const recentEvents = events?.slice(0, 10) || [];
+
+  const statsData = [
+    { 
+      title: 'Page Views', 
+      value: totalViews, 
+      icon: Eye,
+      gradient: 'from-primary to-primary/70'
+    },
+    { 
+      title: 'Contact Clicks', 
+      value: totalClicks, 
+      icon: MousePointerClick,
+      gradient: 'from-accent to-accent/70'
+    },
+    { 
+      title: 'Outbound Clicks', 
+      value: outboundClicks, 
+      icon: TrendingUp,
+      gradient: 'from-success to-success/70'
+    },
+    { 
+      title: 'Conversion Rate', 
+      value: `${totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : 0}%`, 
+      icon: Calendar,
+      gradient: 'from-secondary to-secondary/70'
+    },
+  ];
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="font-serif text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground mt-1">Track visitor engagement and listing performance</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-primary flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-gradient">Analytics</h1>
+          </div>
+          <p className="text-muted-foreground">Track visitor engagement and listing performance</p>
+        </motion.div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Page Views</CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalViews}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Contact Clicks</CardTitle>
-              <MousePointerClick className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalClicks}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Outbound Clicks</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{outboundClicks}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Conversion Rate</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : 0}%
-              </div>
-            </CardContent>
-          </Card>
+          {statsData.map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="overflow-hidden rounded-3xl border-0 shadow-card hover:shadow-float transition-all duration-300 hover-lift bg-card/80 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
+                      <p className="text-3xl font-bold font-display">{stat.value}</p>
+                    </div>
+                    <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-md`}>
+                      <stat.icon className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Views by Listing */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Views by Listing</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {viewsByListing.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={viewsByListing} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={120} fontSize={12} />
-                    <Tooltip />
-                    <Bar dataKey="views" fill="hsl(38, 92%, 50%)" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No data yet</p>
-              )}
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="rounded-3xl border-0 shadow-card bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="border-b border-border/50 bg-muted/30">
+                <CardTitle className="font-display">Views by Listing</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {viewsByListing.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={viewsByListing} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                      <YAxis dataKey="name" type="category" width={120} fontSize={12} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: 'none', 
+                          borderRadius: '1rem',
+                          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+                        }} 
+                      />
+                      <Bar dataKey="views" fill="hsl(var(--primary))" radius={[0, 8, 8, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">No data yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Device Breakdown */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Device Types</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {deviceData.some(d => d.value > 0) ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {deviceData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No data yet</p>
-              )}
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="rounded-3xl border-0 shadow-card bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="border-b border-border/50 bg-muted/30">
+                <CardTitle className="font-display">Device Types</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {deviceData.some(d => d.value > 0) ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={deviceData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {deviceData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: 'none', 
+                          borderRadius: '1rem',
+                          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+                        }} 
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      <Eye className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">No data yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Top Referrers */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Referrers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {referrerData.length > 0 ? (
-                <div className="space-y-3">
-                  {referrerData.map((item, index) => (
-                    <div key={item.name} className="flex items-center justify-between">
-                      <span className="text-sm">{item.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="h-2 rounded-full" 
-                          style={{ 
-                            width: `${(item.value / referrerData[0].value) * 100}px`,
-                            backgroundColor: COLORS[index % COLORS.length]
-                          }} 
-                        />
-                        <span className="text-sm font-medium w-12 text-right">{item.value}</span>
-                      </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Card className="rounded-3xl border-0 shadow-card bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="border-b border-border/50 bg-muted/30">
+                <CardTitle className="font-display">Top Referrers</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {referrerData.length > 0 ? (
+                  <div className="space-y-4">
+                    {referrerData.map((item, index) => (
+                      <motion.div 
+                        key={item.name} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.7 + index * 0.05 }}
+                        className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all"
+                      >
+                        <span className="text-sm font-medium">{item.name}</span>
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="h-2 rounded-full transition-all" 
+                            style={{ 
+                              width: `${Math.max((item.value / referrerData[0].value) * 80, 20)}px`,
+                              backgroundColor: COLORS[index % COLORS.length]
+                            }} 
+                          />
+                          <span className="text-sm font-bold w-10 text-right">{item.value}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      <TrendingUp className="h-8 w-8 text-muted-foreground" />
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No referrer data yet</p>
-              )}
-            </CardContent>
-          </Card>
+                    <p className="text-muted-foreground">No referrer data yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* UTM Campaigns */}
-          <Card>
-            <CardHeader>
-              <CardTitle>UTM Sources</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {utmData.length > 0 ? (
-                <div className="space-y-3">
-                  {utmData.map((item, index) => (
-                    <div key={item.name} className="flex items-center justify-between">
-                      <span className="text-sm">{item.name}</span>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="h-2 rounded-full" 
-                          style={{ 
-                            width: `${(item.value / utmData[0].value) * 100}px`,
-                            backgroundColor: COLORS[index % COLORS.length]
-                          }} 
-                        />
-                        <span className="text-sm font-medium w-12 text-right">{item.value}</span>
-                      </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <Card className="rounded-3xl border-0 shadow-card bg-card/80 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="border-b border-border/50 bg-muted/30">
+                <CardTitle className="font-display">UTM Sources</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {utmData.length > 0 ? (
+                  <div className="space-y-4">
+                    {utmData.map((item, index) => (
+                      <motion.div 
+                        key={item.name} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 + index * 0.05 }}
+                        className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 hover:bg-muted/50 transition-all"
+                      >
+                        <span className="text-sm font-medium">{item.name}</span>
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="h-2 rounded-full transition-all" 
+                            style={{ 
+                              width: `${Math.max((item.value / utmData[0].value) * 80, 20)}px`,
+                              backgroundColor: COLORS[index % COLORS.length]
+                            }} 
+                          />
+                          <span className="text-sm font-bold w-10 text-right">{item.value}</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      <Activity className="h-8 w-8 text-muted-foreground" />
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No UTM data yet</p>
-              )}
-            </CardContent>
-          </Card>
+                    <p className="text-muted-foreground">No UTM data yet</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentEvents.length > 0 ? (
-              <div className="space-y-3">
-                {recentEvents.map((event) => {
-                  const listing = listings?.find(l => l.id === event.listing_id);
-                  const device = event.device_json as Record<string, string> | null;
-                  
-                  return (
-                    <div key={event.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-sm">
-                          {event.event_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {listing?.title || 'Unknown listing'} • {device?.type || 'Unknown device'}
-                        </p>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(event.created_at)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-8">No activity yet</p>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Card className="rounded-3xl border-0 shadow-card bg-card/80 backdrop-blur-sm overflow-hidden">
+            <CardHeader className="border-b border-border/50 bg-muted/30">
+              <CardTitle className="font-display flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Recent Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              {recentEvents.length > 0 ? (
+                <div className="space-y-3">
+                  {recentEvents.map((event, index) => {
+                    const listing = listings?.find(l => l.id === event.listing_id);
+                    const device = event.device_json as Record<string, string> | null;
+                    
+                    return (
+                      <motion.div 
+                        key={event.id} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.9 + index * 0.03 }}
+                        className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl hover:bg-muted/50 transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Eye className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">
+                              {event.event_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {listing?.title || 'Unknown listing'} • {device?.type || 'Unknown device'}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground bg-background px-3 py-1.5 rounded-full">
+                          {formatDate(event.created_at)}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                    <Activity className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground">No activity yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </AdminLayout>
   );
