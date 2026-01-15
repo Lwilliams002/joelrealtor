@@ -44,10 +44,10 @@ export function formatListingStatus(status: string): string {
 
 export function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
-    for_sale: 'bg-success text-success-foreground',
-    for_rent: 'bg-accent text-accent-foreground',
-    sold: 'bg-destructive text-destructive-foreground',
-    pending: 'bg-muted text-muted-foreground',
+    for_sale: 'bg-success text-white',
+    for_rent: 'bg-primary text-white',
+    sold: 'bg-muted text-muted-foreground',
+    pending: 'bg-accent text-white',
   };
   return colors[status] || 'bg-muted text-muted-foreground';
 }
