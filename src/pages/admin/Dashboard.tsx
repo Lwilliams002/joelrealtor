@@ -16,27 +16,38 @@ export default function AdminDashboard() {
   
   // Fetch stats
   const { data: stats } = useQuery({
-    queryKey: ['admin-stats', user?.id],
+    queryKey: ['admin-stats', user?.id, listings],
     queryFn: async () => {
       if (!user) return { views: 0, contacts: 0 };
       
-      const { count: viewCount } = await supabase
-        .from('events')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_type', 'page_view')
-        .in('listing_id', listings?.map(l => l.id) || []);
+      // Get listing IDs or empty array
+      const listingIds = listings?.map(l => l.id) || [];
       
-      const { count: contactCount } = await supabase
-        .from('contact_requests')
-        .select('*', { count: 'exact', head: true })
-        .in('listing_id', listings?.map(l => l.id) || []);
+      let viewCount = 0;
+      let contactCount = 0;
+      
+      if (listingIds.length > 0) {
+        const { count: views } = await supabase
+          .from('events')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_type', 'page_view')
+          .in('listing_id', listingIds);
+        
+        const { count: contacts } = await supabase
+          .from('contact_requests')
+          .select('*', { count: 'exact', head: true })
+          .in('listing_id', listingIds);
+        
+        viewCount = views || 0;
+        contactCount = contacts || 0;
+      }
       
       return {
-        views: viewCount || 0,
-        contacts: contactCount || 0,
+        views: viewCount,
+        contacts: contactCount,
       };
     },
-    enabled: !!user && !!listings,
+    enabled: !!user,
   });
 
   const { data: recentContacts } = useQuery({
