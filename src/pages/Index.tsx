@@ -60,7 +60,7 @@ export default function Index() {
               <Button
                 asChild
                 size="lg"
-                className="btn-outline rounded-none px-10 py-6 text-base"
+                className="bg-primary text-white hover:bg-primary/90 rounded-none px-10 py-6 text-base font-medium uppercase tracking-widest"
               >
                 <Link to="/listings">
                   <Search className="mr-2 h-5 w-5" />
@@ -70,7 +70,7 @@ export default function Index() {
               <Button
                 asChild
                 size="lg"
-                className="btn-outline rounded-none px-10 py-6 text-base"
+                className="bg-primary text-white hover:bg-primary/90 rounded-none px-10 py-6 text-base font-medium uppercase tracking-widest"
               >
                 <Link to="/contact">
                   <DollarSign className="mr-2 h-5 w-5" />
@@ -79,7 +79,7 @@ export default function Index() {
               </Button>
               <Button
                 size="lg"
-                className="btn-outline rounded-none px-10 py-6 text-base"
+                className="bg-primary text-white hover:bg-primary/90 rounded-none px-10 py-6 text-base font-medium uppercase tracking-widest"
                 onClick={() => setHomeValuationOpen(true)}
               >
                 <Home className="mr-2 h-5 w-5" />
