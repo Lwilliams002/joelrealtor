@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, Loader2, Sparkles } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -64,38 +64,37 @@ export default function Auth() {
   if (user) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-mesh" />
-      <div className="blob blob-1 -top-40 -right-40" />
-      <div className="blob blob-2 -bottom-40 -left-40" />
-
+    <div className="min-h-screen flex items-center justify-center p-4 bg-secondary">
       <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-md"
+        className="w-full max-w-md"
       >
-        <Card className="rounded-3xl border-0 shadow-float bg-card/95 backdrop-blur-sm">
-          <CardHeader className="text-center pb-2">
-            <div className="relative mx-auto mb-4">
-              <div className="h-16 w-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow">
-                <Building2 className="h-8 w-8 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 h-6 w-6 bg-accent rounded-full flex items-center justify-center">
-                <Sparkles className="h-3 w-3 text-white" />
-              </div>
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-block">
+            <span className="font-display text-3xl font-semibold tracking-wide text-foreground">
+              PRESTIGE
+            </span>
+            <div className="text-[10px] uppercase tracking-luxury text-muted-foreground">
+              Real Estate
             </div>
-            <CardTitle className="font-display text-2xl">Welcome Back</CardTitle>
+          </Link>
+        </div>
+
+        <Card className="border-0 shadow-elegant">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="font-display text-2xl">Welcome</CardTitle>
             <CardDescription>Sign in to manage your listings</CardDescription>
           </CardHeader>
           <CardContent className="pt-4">
             <Tabs defaultValue="signin">
-              <TabsList className="grid w-full grid-cols-2 mb-6 p-1 bg-secondary rounded-2xl">
-                <TabsTrigger value="signin" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <TabsList className="grid w-full grid-cols-2 mb-6 p-1 bg-secondary rounded-none">
+                <TabsTrigger value="signin" className="rounded-none data-[state=active]:bg-white data-[state=active]:shadow-sm uppercase text-xs tracking-wider">
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                <TabsTrigger value="signup" className="rounded-none data-[state=active]:bg-white data-[state=active]:shadow-sm uppercase text-xs tracking-wider">
                   Sign Up
                 </TabsTrigger>
               </TabsList>
@@ -105,12 +104,12 @@ export default function Auth() {
                   <form onSubmit={form.handleSubmit(handleSignIn)} className="space-y-4">
                     <FormField control={form.control} name="email" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="text-xs uppercase tracking-wider">Email</FormLabel>
                         <FormControl>
                           <Input 
                             type="email" 
                             placeholder="agent@example.com" 
-                            className="h-12 rounded-2xl"
+                            className="h-12 rounded-none border-border"
                             {...field} 
                           />
                         </FormControl>
@@ -119,12 +118,12 @@ export default function Auth() {
                     )} />
                     <FormField control={form.control} name="password" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel className="text-xs uppercase tracking-wider">Password</FormLabel>
                         <FormControl>
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
-                            className="h-12 rounded-2xl"
+                            className="h-12 rounded-none border-border"
                             {...field} 
                           />
                         </FormControl>
@@ -133,7 +132,7 @@ export default function Auth() {
                     )} />
                     <Button 
                       type="submit" 
-                      className="w-full h-12 bg-gradient-primary text-white rounded-2xl shadow-glow hover:shadow-lg hover:scale-[1.02] transition-all" 
+                      className="w-full h-12 btn-primary rounded-none" 
                       disabled={isLoading}
                     >
                       {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Sign In'}
@@ -147,11 +146,11 @@ export default function Auth() {
                   <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-4">
                     <FormField control={form.control} name="name" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel className="text-xs uppercase tracking-wider">Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Your name" 
-                            className="h-12 rounded-2xl"
+                            className="h-12 rounded-none border-border"
                             {...field} 
                           />
                         </FormControl>
@@ -160,12 +159,12 @@ export default function Auth() {
                     )} />
                     <FormField control={form.control} name="email" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="text-xs uppercase tracking-wider">Email</FormLabel>
                         <FormControl>
                           <Input 
                             type="email" 
                             placeholder="agent@example.com" 
-                            className="h-12 rounded-2xl"
+                            className="h-12 rounded-none border-border"
                             {...field} 
                           />
                         </FormControl>
@@ -174,12 +173,12 @@ export default function Auth() {
                     )} />
                     <FormField control={form.control} name="password" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel className="text-xs uppercase tracking-wider">Password</FormLabel>
                         <FormControl>
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
-                            className="h-12 rounded-2xl"
+                            className="h-12 rounded-none border-border"
                             {...field} 
                           />
                         </FormControl>
@@ -188,7 +187,7 @@ export default function Auth() {
                     )} />
                     <Button 
                       type="submit" 
-                      className="w-full h-12 bg-gradient-primary text-white rounded-2xl shadow-glow hover:shadow-lg hover:scale-[1.02] transition-all" 
+                      className="w-full h-12 btn-primary rounded-none" 
                       disabled={isLoading}
                     >
                       {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
