@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Building2, LayoutDashboard, Home, Upload, BarChart3, 
-  Settings, LogOut, Menu, X, User, Sparkles, MessageSquare 
+  Settings, LogOut, Menu, X, User, Sparkles, MessageSquare, ExternalLink, Globe 
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -107,6 +107,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             );
           })}
         </nav>
+
+        {/* View Website Link */}
+        <div className="mt-6 pt-4 border-t border-border/50">
+          <Link
+            to="/"
+            target="_blank"
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-all"
+          >
+            <Globe className="h-5 w-5" />
+            View Website
+            <ExternalLink className="h-3 w-3 ml-auto" />
+          </Link>
+        </div>
       </ScrollArea>
 
       {/* User Section */}
@@ -138,24 +151,43 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     </div>
   );
 
+  // Get current page title for mobile header
+  const getCurrentPageTitle = () => {
+    const currentItem = navItems.find(item => 
+      location.pathname === item.href || 
+      (item.href !== '/admin' && location.pathname.startsWith(item.href))
+    );
+    return currentItem?.label || 'Admin';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-mesh">
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 flex items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="h-9 w-9 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-            <Building2 className="h-5 w-5 text-primary-foreground" />
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="rounded-xl"
+          >
+            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+              <Building2 className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="font-medium text-sm">{getCurrentPageTitle()}</span>
           </div>
-          <span className="font-display text-lg font-bold text-gradient">Prestige</span>
-        </Link>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="rounded-xl"
+        </div>
+        <Link 
+          to="/" 
+          target="_blank"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-xs font-medium hover:bg-accent transition-colors"
         >
-          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+          <Globe className="h-3.5 w-3.5" />
+          View Site
+        </Link>
       </header>
 
       {/* Mobile Sidebar Overlay */}
