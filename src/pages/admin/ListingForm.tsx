@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { ImageUpload } from '@/components/admin/ImageUpload';
+import { ListingPreview } from '@/components/listings/ListingPreview';
 import { useCreateListing, useUpdateListing, generateSlug } from '@/hooks/useListings';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -16,8 +17,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Loader2, FileText, Image, Sparkles } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, FileText, Image, Sparkles, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const listingSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -52,6 +54,8 @@ export default function ListingForm() {
   const [coverImage, setCoverImage] = useState<string>('');
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: existingListing, isLoading: isLoadingListing } = useQuery({
     queryKey: ['listing-edit', id],
@@ -106,11 +110,38 @@ export default function ListingForm() {
     if (existingImages) setImages(existingImages.map(img => img.image_url));
   }, [existingImages]);
 
-  const onSubmit = async (data: ListingFormData) => {
-    const slug = isEditing && existingListing ? existingListing.slug : generateSlug(data.title, data.city);
-    const listingData = { ...data, slug, cover_image_url: coverImage || null, features_json: features, zillow_url: data.zillow_url || null };
-
+  // Geocode address using Mapbox
+  const geocodeAddress = async (address: string, city: string, state: string, zip: string) => {
     try {
+      const { data, error } = await supabase.functions.invoke('geocode-address', {
+        body: { address, city, state, zip }
+      });
+      if (error) throw error;
+      return { latitude: data.latitude, longitude: data.longitude };
+    } catch (err) {
+      console.error('Geocoding failed:', err);
+      return { latitude: null, longitude: null };
+    }
+  };
+
+  const onSubmit = async (data: ListingFormData) => {
+    setIsSaving(true);
+    
+    try {
+      // Geocode the address to get coordinates for the map
+      const { latitude, longitude } = await geocodeAddress(data.address, data.city, data.state, data.zip);
+      
+      const slug = isEditing && existingListing ? existingListing.slug : generateSlug(data.title, data.city);
+      const listingData = { 
+        ...data, 
+        slug, 
+        cover_image_url: coverImage || null, 
+        features_json: features, 
+        zillow_url: data.zillow_url || null,
+        latitude,
+        longitude
+      };
+
       if (isEditing && id) {
         await updateListing.mutateAsync({ id, data: listingData });
         await supabase.from('listing_images').delete().eq('listing_id', id);
@@ -123,14 +154,44 @@ export default function ListingForm() {
           await supabase.from('listing_images').insert(images.map((url, index) => ({ listing_id: result.id, image_url: url, sort_order: index })));
         }
       }
+      
+      if (latitude && longitude) {
+        toast.success('Listing saved with map coordinates!');
+      } else {
+        toast.info('Listing saved. Address could not be geocoded for the map.');
+      }
+      
       navigate('/admin/listings');
     } catch (error) {
       console.error('Save error:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const addFeature = () => { if (newFeature.trim()) { setFeatures([...features, newFeature.trim()]); setNewFeature(''); } };
   const removeFeature = (index: number) => setFeatures(features.filter((_, i) => i !== index));
+
+  // Get current form values for preview
+  const getPreviewData = () => {
+    const values = form.getValues();
+    return {
+      title: values.title,
+      address: values.address,
+      city: values.city,
+      state: values.state,
+      zip: values.zip,
+      price: values.price,
+      beds: values.beds,
+      baths: values.baths,
+      sqft: values.sqft,
+      property_type: values.property_type,
+      status: values.status,
+      description: values.description,
+      features_json: features,
+      cover_image_url: coverImage,
+    };
+  };
 
   if (isEditing && isLoadingListing) {
     return (
@@ -164,8 +225,25 @@ export default function ListingForm() {
                   <span className="text-sm font-medium">{field.value ? '● Published' : 'Draft'}</span>
                 </div>
               )} />
-              <Button type="submit" className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all">
-                <Save className="h-4 w-4 mr-2" />Save
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowPreview(true)} 
+                className="rounded-full"
+              >
+                <Eye className="h-4 w-4 mr-2" />Preview
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isSaving}
+                className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                {isSaving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </motion.div>
@@ -256,6 +334,14 @@ export default function ListingForm() {
           </Tabs>
         </form>
       </Form>
+
+      {/* Preview Dialog */}
+      <ListingPreview 
+        open={showPreview} 
+        onOpenChange={setShowPreview} 
+        listing={getPreviewData()} 
+        images={images}
+      />
     </AdminLayout>
   );
 }
