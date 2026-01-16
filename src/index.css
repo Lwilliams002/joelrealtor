@@ -274,53 +274,10 @@
   display: none;
 }
 
-/* Price marker styles */
-.listing-marker-container {
-  position: relative;
-}
-
-.listing-price-marker {
-  background: hsl(220 40% 15%);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', system-ui, sans-serif;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px hsl(220 25% 10% / 0.3);
-  transition: all 0.2s ease;
+.listing-marker {
   cursor: pointer;
-  position: relative;
 }
 
-.listing-price-marker:hover {
-  background: hsl(38 70% 50%);
-  transform: scale(1.1);
-  z-index: 10;
-}
-
-.marker-arrow {
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid hsl(220 40% 15%);
-  transition: border-top-color 0.2s ease;
-}
-
-.listing-price-marker:hover .marker-arrow {
-  border-top-color: hsl(38 70% 50%);
-}
-
-.listing-price-marker.active {
-  background: hsl(38 70% 50%);
-}
-
-.listing-price-marker.active .marker-arrow {
-  border-top-color: hsl(38 70% 50%);
+.listing-marker:hover .w-3 {
+  transform: scale(1.5);
 }

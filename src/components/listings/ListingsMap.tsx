@@ -78,18 +78,12 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
     listings.forEach(listing => {
       if (!listing.latitude || !listing.longitude) return;
 
-      // Format price for marker label
-      const priceLabel = listing.price >= 1000000 
-        ? `$${(listing.price / 1000000).toFixed(1)}M`
-        : `$${Math.round(listing.price / 1000)}K`;
-
-      // Create custom marker element with price label
+      // Create custom marker element
       const el = document.createElement('div');
-      el.className = 'listing-marker-container';
+      el.className = 'listing-marker';
       el.innerHTML = `
-        <div class="listing-price-marker" data-listing-id="${listing.id}">
-          <span class="marker-price">${priceLabel}</span>
-          <div class="marker-arrow"></div>
+        <div class="w-3 h-3 bg-foreground rounded-full border-2 border-background shadow-lg cursor-pointer transition-transform hover:scale-150" 
+             data-listing-id="${listing.id}">
         </div>
       `;
       el.style.cursor = 'pointer';
@@ -127,28 +121,9 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
     }
   }, [listings, mapboxToken, onListingHover]);
 
-  // Handle hovered listing from cards - highlight marker
+  // Handle hovered listing from cards
   useEffect(() => {
-    // Reset all markers
-    Object.entries(markersRef.current).forEach(([id, marker]) => {
-      const el = marker.getElement();
-      const priceMarker = el.querySelector('.listing-price-marker');
-      if (priceMarker) {
-        priceMarker.classList.remove('active');
-      }
-    });
-
     if (!map.current || !hoveredListingId) return;
-
-    // Highlight hovered marker
-    const marker = markersRef.current[hoveredListingId];
-    if (marker) {
-      const el = marker.getElement();
-      const priceMarker = el.querySelector('.listing-price-marker');
-      if (priceMarker) {
-        priceMarker.classList.add('active');
-      }
-    }
 
     const listing = listings.find(l => l.id === hoveredListingId);
     if (listing && listing.latitude && listing.longitude) {
