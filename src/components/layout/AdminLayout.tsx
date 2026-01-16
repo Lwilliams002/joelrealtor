@@ -110,15 +110,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* View Website Link */}
         <div className="mt-6 pt-4 border-t border-border/50">
-          <Link
-            to="/"
+          <a
+            href="https://joelrealtor.lovable.app"
             target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-all"
           >
             <Globe className="h-5 w-5" />
             View Website
             <ExternalLink className="h-3 w-3 ml-auto" />
-          </Link>
+          </a>
         </div>
       </ScrollArea>
 
@@ -180,14 +181,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <span className="font-medium text-sm">{getCurrentPageTitle()}</span>
           </div>
         </div>
-        <Link 
-          to="/" 
+        <a 
+          href="https://joelrealtor.lovable.app"
           target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-xs font-medium hover:bg-accent transition-colors"
         >
           <Globe className="h-3.5 w-3.5" />
           View Site
-        </Link>
+        </a>
       </header>
 
       {/* Mobile Sidebar Overlay */}
