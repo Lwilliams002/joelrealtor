@@ -20,6 +20,7 @@ import ListingForm from "./pages/admin/ListingForm";
 import ImportListings from "./pages/admin/Import";
 import Analytics from "./pages/admin/Analytics";
 import Settings from "./pages/admin/Settings";
+import Contacts from "./pages/admin/Contacts";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/admin/listings" element={<AdminListings />} />
             <Route path="/admin/listings/new" element={<ListingForm />} />
             <Route path="/admin/listings/:id" element={<ListingForm />} />
+            <Route path="/admin/contacts" element={<Contacts />} />
             <Route path="/admin/import" element={<ImportListings />} />
             <Route path="/admin/analytics" element={<Analytics />} />
             <Route path="/admin/settings" element={<Settings />} />

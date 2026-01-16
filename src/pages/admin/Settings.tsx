@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Save, Loader2, Settings as SettingsIcon, User, Bell, Mail, Clock, Calendar } from 'lucide-react';
+import { Save, Loader2, Settings as SettingsIcon, User, Bell, Mail, Clock, Calendar, Upload, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Settings() {
@@ -24,7 +25,11 @@ export default function Settings() {
     email: '',
     bio: '',
     zillow_profile_url: '',
+    headshot_url: '',
   });
+
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [notifications, setNotifications] = useState({
     immediate_email: true,
@@ -70,9 +75,62 @@ export default function Settings() {
         email: profileData.email || '',
         bio: profileData.bio || '',
         zillow_profile_url: profileData.zillow_profile_url || '',
+        headshot_url: profileData.headshot_url || '',
       });
     }
   }, [profileData]);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/headshot.${fileExt}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('listing-images')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('listing-images')
+        .getPublicUrl(fileName);
+
+      const newUrl = `${urlData.publicUrl}?t=${Date.now()}`; // Cache bust
+      setProfile(prev => ({ ...prev, headshot_url: newUrl }));
+      
+      // Save to profile immediately
+      await supabase
+        .from('realtor_profiles')
+        .update({ headshot_url: newUrl })
+        .eq('id', user.id);
+
+      queryClient.invalidateQueries({ queryKey: ['realtor-profile'] });
+      toast.success('Photo uploaded successfully');
+    } catch (error: any) {
+      toast.error(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   useEffect(() => {
     if (notificationData) {
@@ -190,54 +248,104 @@ export default function Settings() {
                   <CardDescription>This information will be displayed on your public listings</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Name</Label>
-                      <Input 
-                        value={profile.name}
-                        onChange={(e) => setProfile({...profile, name: e.target.value})}
-                        placeholder="Your full name"
-                        className="rounded-xl"
+                  {/* Headshot Upload */}
+                  <div className="flex items-center gap-6">
+                    <div className="relative">
+                      <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                        <AvatarImage src={profile.headshot_url} alt={profile.name} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-2xl font-display">
+                          {profile.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                        className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:scale-105 transition-transform disabled:opacity-50"
+                      >
+                        {isUploadingImage ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Phone</Label>
-                      <Input 
-                        value={profile.phone}
-                        onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                        placeholder="(555) 123-4567"
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Email</Label>
-                      <Input 
-                        type="email"
-                        value={profile.email}
-                        onChange={(e) => setProfile({...profile, email: e.target.value})}
-                        placeholder="agent@example.com"
-                        className="rounded-xl"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Zillow Profile URL</Label>
-                      <Input 
-                        value={profile.zillow_profile_url}
-                        onChange={(e) => setProfile({...profile, zillow_profile_url: e.target.value})}
-                        placeholder="https://zillow.com/profile/..."
-                        className="rounded-xl"
-                      />
+                    <div>
+                      <p className="font-medium">Profile Photo</p>
+                      <p className="text-sm text-muted-foreground">
+                        This photo will appear on your listings and contact page
+                      </p>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2 rounded-full"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Photo
+                      </Button>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Bio</Label>
-                    <Textarea 
-                      value={profile.bio}
-                      onChange={(e) => setProfile({...profile, bio: e.target.value})}
-                      placeholder="Tell potential clients about yourself..."
-                      className="min-h-[120px] rounded-xl"
-                    />
+                  <div className="border-t border-border pt-6 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Name</Label>
+                        <Input 
+                          value={profile.name}
+                          onChange={(e) => setProfile({...profile, name: e.target.value})}
+                          placeholder="Your full name"
+                          className="rounded-xl"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Phone</Label>
+                        <Input 
+                          value={profile.phone}
+                          onChange={(e) => setProfile({...profile, phone: e.target.value})}
+                          placeholder="(555) 123-4567"
+                          className="rounded-xl"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Email</Label>
+                        <Input 
+                          type="email"
+                          value={profile.email}
+                          onChange={(e) => setProfile({...profile, email: e.target.value})}
+                          placeholder="agent@example.com"
+                          className="rounded-xl"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Zillow Profile URL</Label>
+                        <Input 
+                          value={profile.zillow_profile_url}
+                          onChange={(e) => setProfile({...profile, zillow_profile_url: e.target.value})}
+                          placeholder="https://zillow.com/profile/..."
+                          className="rounded-xl"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Bio</Label>
+                      <Textarea 
+                        value={profile.bio}
+                        onChange={(e) => setProfile({...profile, bio: e.target.value})}
+                        placeholder="Tell potential clients about yourself..."
+                        className="min-h-[120px] rounded-xl"
+                      />
+                    </div>
                   </div>
 
                   <Button 

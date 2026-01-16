@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Building2, LayoutDashboard, Home, Upload, BarChart3, 
-  Settings, LogOut, Menu, X, User, Sparkles 
+  Settings, LogOut, Menu, X, User, Sparkles, MessageSquare 
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ interface AdminLayoutProps {
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/listings', label: 'Listings', icon: Home },
+  { href: '/admin/contacts', label: 'Contacts', icon: MessageSquare },
   { href: '/admin/import', label: 'Import', icon: Upload },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
