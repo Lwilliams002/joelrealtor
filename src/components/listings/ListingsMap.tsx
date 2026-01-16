@@ -54,7 +54,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center,
       zoom,
     });
@@ -123,7 +123,13 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
 
   // Handle hovered listing from cards
   useEffect(() => {
-    if (!map.current || !hoveredListingId) return;
+    if (!map.current) return;
+
+    // If no listing is hovered, remove the popup
+    if (!hoveredListingId) {
+      popupRef.current?.remove();
+      return;
+    }
 
     const listing = listings.find(l => l.id === hoveredListingId);
     if (listing && listing.latitude && listing.longitude) {
