@@ -29,7 +29,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [mapStyle, setMapStyle] = useState<MapStyle>('satellite');
+  const [mapStyle, setMapStyle] = useState<MapStyle>('streets');
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -131,7 +131,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
       });
       map.current.fitBounds(bounds, { padding: 50 });
     }
-  }, [listings, mapboxToken, onListingHover]);
+  }, [listings, mapboxToken, mapStyle, onListingHover]);
 
   // Handle hovered listing from cards
   useEffect(() => {
