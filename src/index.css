@@ -261,3 +261,23 @@
     background-clip: text;
   }
 }
+
+/* Mapbox popup customization */
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 30px hsl(220 25% 10% / 0.15) !important;
+}
+
+.mapboxgl-popup-tip {
+  display: none;
+}
+
+.listing-marker {
+  cursor: pointer;
+}
+
+.listing-marker:hover .w-3 {
+  transform: scale(1.5);
+}
