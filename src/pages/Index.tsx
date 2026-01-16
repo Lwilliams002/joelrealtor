@@ -160,55 +160,54 @@ export default function Index() {
       </section>
 
       {/* About Agent Section */}
-      <section className="py-32 bg-background">
-        <div className="container max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <section className="py-24 bg-secondary">
+        <div className="container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Agent Image */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.7 }}
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="relative">
-                {/* Main Image Container */}
-                <div className="relative overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)]">
-                  <img
-                    src={joelAguirreImg}
-                    alt="Joel Aguirre - Real Estate Agent"
-                    className="w-full aspect-[4/5] object-cover object-top"
-                  />
-                </div>
-                {/* Subtle Frame Effect */}
-                <div className="absolute inset-0 border border-primary/10 pointer-events-none" />
+              <div className="aspect-[3/4] overflow-hidden shadow-elegant">
+                <img
+                  src={joelAguirreImg}
+                  alt="Joel Aguirre - Real Estate Agent"
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
+              {/* Decorative Element */}
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary -z-10" />
             </motion.div>
 
             {/* Agent Info */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.7, delay: 0.1 }}
               viewport={{ once: true }}
-              className="lg:pl-8"
             >
-              <p className="text-sm uppercase tracking-[0.25em] text-muted-foreground mb-6 font-medium">
-                About
-              </p>
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-normal mb-8 tracking-tight">
+              <p className="text-sm uppercase tracking-luxury text-muted-foreground mb-4">About</p>
+              <h2 className="font-display text-4xl md:text-5xl font-semibold mb-6">
                 Joel Aguirre
               </h2>
-              <p className="text-muted-foreground leading-[1.8] text-base md:text-lg mb-10 max-w-lg">
-                My name is Joel Aguirre, I was born in Vail Colorado and moved here to Albuquerque, New Mexico at the young age of 10 years old. I graduated from West Mesa High School and then went on to pursue my BBA at the University of New Mexico. In my time at UNM I realized that helping others was something that I enjoyed and came easy to me. Once I graduated from UNM, I knew that I wanted to help people in my community. That is why as one of EXP Albuquerque's Top...
-              </p>
-              <Button 
-                asChild 
-                size="lg" 
-                className="bg-foreground text-background hover:bg-foreground/90 rounded-none px-10 py-6 text-sm font-medium tracking-wide"
-              >
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  My name is Joel Aguirre, I was born in Vail Colorado and moved here to Albuquerque, New Mexico at the young age of 10 years old. I graduated from West Mesa High School and then went on to pursue my BBA at the University of New Mexico.
+                </p>
+                <p>
+                  In my time at UNM I realized that helping others was something that I enjoyed and came easy to me. Once I graduated from UNM, I knew that I wanted to help people in my community. That is why as one of EXP Albuquerque's Top Producers, I am proud to represent home buyers & sellers in the Albuquerque, Rio Rancho, Santa Fe and surrounding areas.
+                </p>
+                <p>
+                  I have an in-depth knowledge of the market and the skills to help you achieve your real estate needs. My dedication to excellence and commitment to service sets me apart in the competitive real estate market. I would love the opportunity to be your trusted partner in achieving your real estate goals.
+                </p>
+              </div>
+              <Button asChild size="lg" className="btn-primary rounded-none mt-8">
                 <Link to="/contact">
                   Learn More
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </motion.div>
