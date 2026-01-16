@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
-        sans: ["'DM Sans'", "system-ui", "sans-serif"],
+        display: ["'Playfair Display'", "Georgia", "serif"],
+        sans: ["'Inter'", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -67,12 +67,12 @@ export default {
         },
       },
       borderRadius: {
-        "2xl": "1.25rem",
-        "3xl": "1.5rem",
-        "4xl": "2rem",
+        "2xl": "0.75rem",
+        "3xl": "1rem",
+        "4xl": "1.25rem",
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 4px)",
-        sm: "calc(var(--radius) - 8px)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {

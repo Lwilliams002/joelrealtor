@@ -27,8 +27,8 @@ export default function ListingDetail() {
       <PublicLayout>
         <div className="container py-32">
           <div className="animate-pulse space-y-6">
-            <div className="h-[60vh] bg-muted rounded-3xl" />
-            <div className="h-8 bg-muted rounded-xl w-1/2" />
+            <div className="h-[60vh] bg-muted" />
+            <div className="h-8 bg-muted w-1/2" />
           </div>
         </div>
       </PublicLayout>
@@ -39,8 +39,8 @@ export default function ListingDetail() {
     return (
       <PublicLayout>
         <div className="container py-32 text-center">
-          <h1 className="font-display text-2xl font-bold">Listing not found</h1>
-          <Button asChild className="mt-4">
+          <h1 className="font-display text-2xl font-semibold">Listing not found</h1>
+          <Button asChild className="mt-4 btn-primary rounded-none">
             <Link to="/listings">Back to Listings</Link>
           </Button>
         </div>
@@ -56,12 +56,12 @@ export default function ListingDetail() {
       <section className="relative pt-20">
         <div className="relative h-[50vh] md:h-[65vh]">
           <img src={allImages[0]} alt={listing.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0 hero-overlay" />
           
           {/* Back Button */}
           <Link 
             to="/listings"
-            className="absolute top-6 left-6 h-12 w-12 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white transition-colors shadow-lg"
+            className="absolute top-6 left-6 h-12 w-12 bg-white flex items-center justify-center hover:bg-secondary transition-colors shadow-elegant"
           >
             <ChevronLeft className="h-6 w-6" />
           </Link>
@@ -71,13 +71,13 @@ export default function ListingDetail() {
             <button
               onClick={() => setIsLiked(!isLiked)}
               className={cn(
-                "h-12 w-12 rounded-2xl flex items-center justify-center transition-all shadow-lg",
-                isLiked ? "bg-primary text-white" : "bg-white/90 backdrop-blur-sm hover:bg-white"
+                "h-12 w-12 flex items-center justify-center transition-all shadow-elegant",
+                isLiked ? "bg-primary text-white" : "bg-white hover:bg-secondary"
               )}
             >
               <Heart className={cn("h-5 w-5", isLiked && "fill-current")} />
             </button>
-            <button className="h-12 w-12 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center hover:bg-white transition-colors shadow-lg">
+            <button className="h-12 w-12 bg-white flex items-center justify-center hover:bg-secondary transition-colors shadow-elegant">
               <Share2 className="h-5 w-5" />
             </button>
           </div>
@@ -90,16 +90,16 @@ export default function ListingDetail() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Badge className={cn("rounded-full px-4 py-1.5 mb-4", getStatusColor(listing.status))}>
+                <Badge className={cn("rounded-none px-4 py-1.5 mb-4 uppercase tracking-wider text-xs", getStatusColor(listing.status))}>
                   {formatListingStatus(listing.status)}
                 </Badge>
-                <h1 className="font-display text-3xl md:text-5xl font-bold text-white mb-3">{listing.title}</h1>
+                <h1 className="font-display text-3xl md:text-5xl font-semibold text-white mb-3">{listing.title}</h1>
                 <div className="flex items-center gap-2 text-white/80 mb-4">
                   <MapPin className="h-5 w-5" />
                   <span>{listing.address}, {listing.city}, {listing.state} {listing.zip}</span>
                 </div>
-                <div className="inline-flex items-center bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg">
-                  <span className="font-display text-2xl md:text-3xl font-bold text-foreground">
+                <div className="inline-flex items-center bg-white px-6 py-3 shadow-elegant">
+                  <span className="font-display text-2xl md:text-3xl font-semibold text-foreground">
                     {formatPrice(listing.price)}
                   </span>
                   {listing.status === 'for_rent' && (
@@ -122,25 +122,25 @@ export default function ListingDetail() {
             className="lg:col-span-2 space-y-8"
           >
             {/* Quick Stats */}
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-4">
               {[
-                { icon: Bed, label: 'Beds', value: listing.beds, color: 'bg-primary/10 text-primary' },
-                { icon: Bath, label: 'Baths', value: listing.baths, color: 'bg-accent/10 text-accent' },
-                { icon: Square, label: 'Sq Ft', value: listing.sqft?.toLocaleString(), color: 'bg-secondary text-secondary-foreground' },
-                { icon: Calendar, label: 'Type', value: formatPropertyType(listing.property_type), color: 'bg-muted text-muted-foreground' },
+                { icon: Bed, label: 'Bedrooms', value: listing.beds },
+                { icon: Bath, label: 'Bathrooms', value: listing.baths },
+                { icon: Square, label: 'Sq Ft', value: listing.sqft?.toLocaleString() },
+                { icon: Calendar, label: 'Type', value: formatPropertyType(listing.property_type) },
               ].map((stat) => stat.value && (
-                <div key={stat.label} className={cn("p-4 rounded-2xl text-center", stat.color)}>
-                  <stat.icon className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-display font-bold">{stat.value}</p>
-                  <p className="text-xs opacity-70">{stat.label}</p>
+                <div key={stat.label} className="p-4 bg-secondary text-center">
+                  <stat.icon className="h-6 w-6 mx-auto mb-2 text-muted-foreground" />
+                  <p className="font-display text-lg font-semibold">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Description */}
-            <Card className="rounded-3xl border-0 shadow-card">
+            <Card className="border-0 shadow-card">
               <CardHeader>
-                <CardTitle className="font-display">About This Property</CardTitle>
+                <CardTitle className="font-display text-xl">About This Property</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
@@ -151,14 +151,14 @@ export default function ListingDetail() {
 
             {/* Features */}
             {listing.features_json && (listing.features_json as string[]).length > 0 && (
-              <Card className="rounded-3xl border-0 shadow-card">
+              <Card className="border-0 shadow-card">
                 <CardHeader>
-                  <CardTitle className="font-display">Features & Amenities</CardTitle>
+                  <CardTitle className="font-display text-xl">Features & Amenities</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {(listing.features_json as string[]).map((feature, i) => (
-                      <span key={i} className="px-4 py-2 bg-secondary rounded-full text-sm font-medium">
+                      <span key={i} className="px-4 py-2 bg-secondary text-sm text-center">
                         {feature}
                       </span>
                     ))}
@@ -171,7 +171,7 @@ export default function ListingDetail() {
             {listing.zillow_url && (
               <Button 
                 variant="outline" 
-                className="rounded-2xl"
+                className="rounded-none border-primary text-primary hover:bg-primary hover:text-white"
                 onClick={() => { trackOutboundClick(listing.id, listing.zillow_url!); window.open(listing.zillow_url!, '_blank'); }}
               >
                 <ExternalLink className="h-4 w-4 mr-2" /> View on Zillow
@@ -186,16 +186,16 @@ export default function ListingDetail() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="space-y-6"
           >
-            <Card className="rounded-3xl border-0 shadow-card sticky top-24">
+            <Card className="border-0 shadow-card sticky top-24">
               <CardHeader>
-                <CardTitle className="font-display">Schedule a Showing</CardTitle>
+                <CardTitle className="font-display text-xl">Schedule a Showing</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-2">
-                  <Button className="flex-1 rounded-2xl" variant="outline">
+                  <Button className="flex-1 rounded-none" variant="outline">
                     <Phone className="h-4 w-4 mr-2" /> Call
                   </Button>
-                  <Button className="flex-1 rounded-2xl" variant="outline">
+                  <Button className="flex-1 rounded-none" variant="outline">
                     <Mail className="h-4 w-4 mr-2" /> Email
                   </Button>
                 </div>

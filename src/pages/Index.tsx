@@ -3,270 +3,222 @@ import { PublicLayout } from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/ListingCard';
 import { usePublicListings } from '@/hooks/useListings';
-import { ArrowRight, Home, Shield, Star, TrendingUp, Sparkles, Play, ChevronRight } from 'lucide-react';
+import { ArrowRight, Home, Play, ChevronDown, Search, DollarSign, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Index() {
   const { data: listings, isLoading } = usePublicListings({ sortBy: 'newest' });
   const featuredListings = listings?.slice(0, 6) || [];
 
+  const scrollToListings = () => {
+    document.getElementById('featured-listings')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <PublicLayout>
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-        {/* Background Decorations */}
-        <div className="absolute inset-0 bg-gradient-mesh" />
-        <div className="blob blob-1 -top-20 -right-20" />
-        <div className="blob blob-2 -bottom-40 -left-40" />
+      {/* Hero Section with Video Background */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+            poster="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80"
+          >
+            <source
+              src="https://player.vimeo.com/external/370331493.sd.mp4?s=e90dcaba73c19e0e36f03406b47bbd6992dd6c1c&profile_id=139&oauth2_token_id=57447761"
+              type="video/mp4"
+            />
+          </video>
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 hero-overlay" />
+        </div>
 
-        <div className="container relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-center lg:text-left"
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full mb-6"
+        {/* Hero Content */}
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-white mb-6 tracking-tight">
+              Let's Find Home
+            </h1>
+            <p className="text-lg sm:text-xl text-white/80 mb-12 font-light max-w-2xl mx-auto">
+              Buy and sell real estate, search neighborhoods, and get home estimates.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap justify-center gap-4 mb-16">
+              <Button
+                asChild
+                size="lg"
+                className="btn-outline rounded-none px-10 py-6 text-base"
               >
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-secondary-foreground">Welcome to Prestige Realty</span>
-              </motion.div>
+                <Link to="/listings">
+                  <Search className="mr-2 h-5 w-5" />
+                  Buy
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className="btn-outline rounded-none px-10 py-6 text-base"
+              >
+                <Link to="/contact">
+                  <DollarSign className="mr-2 h-5 w-5" />
+                  Sell
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                className="btn-outline rounded-none px-10 py-6 text-base"
+              >
+                <Link to="/contact">
+                  <Home className="mr-2 h-5 w-5" />
+                  Home Value
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
 
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-6">
-                Find Your 
-                <span className="text-gradient"> Perfect </span>
-                Home Today
-              </h1>
-
-              <p className="text-lg text-muted-foreground mb-8 max-w-lg mx-auto lg:mx-0">
-                Discover exceptional properties with our curated collection. We make finding your dream home a delightful journey.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button 
-                  asChild 
-                  size="lg" 
-                  className="bg-gradient-primary text-white rounded-full px-8 h-14 text-base shadow-glow hover:shadow-lg hover:scale-105 transition-all duration-300"
-                >
-                  <Link to="/listings">
-                    Explore Properties
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button 
-                  asChild 
-                  size="lg" 
-                  variant="outline" 
-                  className="rounded-full px-8 h-14 text-base border-2 hover:bg-secondary transition-all duration-300"
-                >
-                  <Link to="/contact" className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Play className="h-3 w-3 text-primary fill-primary" />
-                    </div>
-                    Watch Video
-                  </Link>
-                </Button>
-              </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-8 mt-12 justify-center lg:justify-start">
-                {[
-                  { value: '500+', label: 'Properties' },
-                  { value: '200+', label: 'Happy Clients' },
-                  { value: '15+', label: 'Years Exp.' },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
-                    className="text-center"
-                  >
-                    <p className="font-display text-2xl font-bold">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, x: 50 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="relative hidden lg:block"
-            >
-              <div className="relative">
-                {/* Main Image */}
-                <div className="relative rounded-[2.5rem] overflow-hidden shadow-float">
-                  <img 
-                    src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" 
-                    alt="Luxury Home"
-                    className="w-full aspect-[4/5] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                </div>
-
-                {/* Floating Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.5 }}
-                  className="absolute -left-8 bottom-24 bg-white rounded-2xl p-4 shadow-float"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center">
-                      <Home className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-display font-bold">2,500+</p>
-                      <p className="text-sm text-muted-foreground">Listed Properties</p>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Rating Badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.5 }}
-                  className="absolute -right-4 top-20 bg-white rounded-2xl p-4 shadow-float"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                      ))}
-                    </div>
-                    <span className="font-bold">4.9</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">500+ Reviews</p>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
+          {/* Scroll Indicator */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.5 }}
+            onClick={scrollToListings}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 hover:text-white transition-colors"
+          >
+            <ChevronDown className="h-8 w-8 animate-bounce" />
+          </motion.button>
         </div>
       </section>
 
       {/* Featured Listings */}
-      <section className="py-24 relative">
+      <section id="featured-listings" className="py-24 bg-background">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-12"
+            className="text-center mb-16"
           >
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full mb-4">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Featured Properties</span>
-              </div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold">
-                Discover Our Latest <span className="text-gradient">Listings</span>
-              </h2>
-              <p className="text-muted-foreground mt-3 max-w-lg">
-                Hand-picked properties that match your lifestyle and aspirations.
-              </p>
-            </div>
-            <Button 
-              asChild 
-              variant="ghost" 
-              className="mt-4 md:mt-0 group"
-            >
-              <Link to="/listings" className="flex items-center gap-2">
-                View All Properties
-                <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4">
+              Featured Properties
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Discover our handpicked selection of exceptional homes
+            </p>
           </motion.div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-muted aspect-[4/3] rounded-3xl" />
-                  <div className="mt-4 h-6 bg-muted rounded-xl w-3/4" />
-                  <div className="mt-2 h-4 bg-muted rounded-lg w-1/2" />
+                  <div className="bg-muted aspect-[4/3]" />
+                  <div className="mt-4 h-6 bg-muted w-3/4" />
+                  <div className="mt-2 h-4 bg-muted w-1/2" />
                 </div>
               ))}
             </div>
           ) : featuredListings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredListings.map((listing, index) => (
                 <ListingCard key={listing.id} listing={listing} index={index} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-secondary/30 rounded-3xl">
-              <Home className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-display text-xl font-bold mb-2">No listings yet</h3>
+            <div className="text-center py-20 bg-secondary">
+              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-display text-xl font-semibold mb-2">No listings yet</h3>
               <p className="text-muted-foreground">Check back soon for new properties.</p>
             </div>
           )}
-        </div>
-      </section>
 
-      {/* Why Choose Us */}
-      <section className="py-24 bg-gradient-soft relative overflow-hidden">
-        <div className="container relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <Button asChild size="lg" className="btn-primary rounded-none">
+              <Link to="/listings">
+                Explore All Properties
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-24 bg-secondary">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent/10 rounded-full mb-4">
-              <Star className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent">Why Choose Us</span>
-            </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold">
-              We Make Home Buying <span className="text-gradient">Simple</span>
+            <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4">
+              How Can We Help?
             </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Whether you're buying, selling, or just exploring, we're here to guide you
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                icon: Shield,
-                title: 'Trusted Experts',
-                description: 'Our experienced agents guide you through every step with confidence.',
-                color: 'bg-primary',
+                icon: Search,
+                title: 'Buy a Home',
+                description: 'Search our extensive collection of properties to find your perfect match.',
+                link: '/listings',
+                linkText: 'Start Searching',
               },
               {
-                icon: Star,
-                title: 'Premium Service',
-                description: 'Personalized, white-glove service tailored to your unique needs.',
-                color: 'bg-accent',
+                icon: DollarSign,
+                title: 'Sell Your Home',
+                description: 'Get expert guidance and maximum value for your property.',
+                link: '/contact',
+                linkText: 'Get Started',
               },
               {
-                icon: TrendingUp,
-                title: 'Market Insights',
-                description: 'Access exclusive data to make informed investment decisions.',
-                color: 'bg-secondary-foreground',
+                icon: Home,
+                title: 'Home Valuation',
+                description: 'Discover what your home is worth in today\'s market.',
+                link: '/contact',
+                linkText: 'Get Estimate',
               },
-            ].map((feature, index) => (
+            ].map((service, index) => (
               <motion.div
-                key={feature.title}
+                key={service.title}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="group bg-card p-8 rounded-3xl shadow-card hover-lift text-center"
+                className="bg-card p-8 shadow-card hover-lift group"
               >
-                <div className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <feature.icon className="h-8 w-8 text-white" />
+                <div className="w-14 h-14 bg-primary flex items-center justify-center mb-6 group-hover:bg-accent transition-colors duration-300">
+                  <service.icon className="h-7 w-7 text-primary-foreground" />
                 </div>
-                <h3 className="font-display text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="font-display text-xl font-semibold mb-3">{service.title}</h3>
+                <p className="text-muted-foreground mb-6">{service.description}</p>
+                <Link 
+                  to={service.link}
+                  className="text-sm font-medium uppercase tracking-luxury text-primary hover:text-accent transition-colors link-underline"
+                >
+                  {service.linkText}
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -274,34 +226,40 @@ export default function Index() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24">
+      <section className="py-24 bg-primary text-primary-foreground">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative bg-gradient-primary rounded-[2.5rem] p-12 md:p-16 text-center overflow-hidden"
+            className="text-center max-w-3xl mx-auto"
           >
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
-            
-            <div className="relative z-10">
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                Ready to Find Your Dream Home?
-              </h2>
-              <p className="text-white/80 mb-8 max-w-lg mx-auto text-lg">
-                Let us help you navigate the real estate market and discover properties you'll love.
-              </p>
+            <h2 className="font-display text-4xl md:text-5xl font-semibold mb-6">
+              Ready to Find Your Dream Home?
+            </h2>
+            <p className="text-primary-foreground/80 mb-10 text-lg">
+              Let our experienced team guide you through every step of your real estate journey.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
               <Button 
                 asChild 
-                size="lg" 
-                className="bg-white text-primary rounded-full px-8 h-14 text-base hover:bg-white/90 hover:scale-105 transition-all duration-300"
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 rounded-none px-10 py-6 text-sm font-medium uppercase tracking-luxury"
               >
                 <Link to="/contact">
-                  Get Started Today
+                  Contact Us Today
                   <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button 
+                asChild 
+                size="lg"
+                variant="outline"
+                className="border-2 border-white text-white hover:bg-white hover:text-primary rounded-none px-10 py-6 text-sm font-medium uppercase tracking-luxury bg-transparent"
+              >
+                <Link to="/listings">
+                  Browse Properties
                 </Link>
               </Button>
             </div>
