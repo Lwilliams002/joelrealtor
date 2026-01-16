@@ -51,7 +51,7 @@ export default function AdminListings() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <Button asChild className="rounded-full bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl transition-all hover-lift">
+            <Button asChild className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all">
               <Link to="/admin/listings/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Listing
@@ -215,7 +215,7 @@ export default function AdminListings() {
                   <Home className="h-10 w-10 text-muted-foreground" />
                 </motion.div>
                 <p className="text-muted-foreground mb-6 text-lg">No listings found</p>
-                <Button asChild className="rounded-full bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl transition-all hover-lift">
+                <Button asChild className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all">
                   <Link to="/admin/listings/new">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Your First Listing
