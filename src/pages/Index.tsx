@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
@@ -6,8 +7,10 @@ import { usePublicListings } from '@/hooks/useListings';
 import { ArrowRight, Home, ChevronDown, Search, DollarSign, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import joelAguirreImg from '@/assets/joel-aguirre.png';
+import { HomeValuationModal } from '@/components/forms/HomeValuationModal';
 
 export default function Index() {
+  const [homeValuationOpen, setHomeValuationOpen] = useState(false);
   const { data: listings, isLoading } = usePublicListings({ sortBy: 'newest' });
   const featuredListings = listings?.slice(0, 6) || [];
 
@@ -75,14 +78,12 @@ export default function Index() {
                 </Link>
               </Button>
               <Button
-                asChild
                 size="lg"
                 className="btn-outline rounded-none px-10 py-6 text-base"
+                onClick={() => setHomeValuationOpen(true)}
               >
-                <Link to="/contact">
-                  <Home className="mr-2 h-5 w-5" />
-                  Home Value
-                </Link>
+                <Home className="mr-2 h-5 w-5" />
+                Home Value
               </Button>
             </div>
           </motion.div>
@@ -253,8 +254,9 @@ export default function Index() {
                 icon: Home,
                 title: 'Home Valuation',
                 description: "Discover what your home is worth in today's market.",
-                link: '/contact',
+                link: null,
                 linkText: 'Get Estimate',
+                onClick: () => setHomeValuationOpen(true),
               },
             ].map((service, index) => (
               <motion.div
@@ -270,12 +272,21 @@ export default function Index() {
                 </div>
                 <h3 className="font-display text-xl font-semibold mb-3">{service.title}</h3>
                 <p className="text-muted-foreground mb-6">{service.description}</p>
-                <Link 
-                  to={service.link}
-                  className="text-sm font-medium uppercase tracking-luxury text-primary hover:text-accent transition-colors link-underline"
-                >
-                  {service.linkText}
-                </Link>
+                {service.link ? (
+                  <Link 
+                    to={service.link}
+                    className="text-sm font-medium uppercase tracking-luxury text-primary hover:text-accent transition-colors link-underline"
+                  >
+                    {service.linkText}
+                  </Link>
+                ) : (
+                  <button 
+                    onClick={service.onClick}
+                    className="text-sm font-medium uppercase tracking-luxury text-primary hover:text-accent transition-colors link-underline"
+                  >
+                    {service.linkText}
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
@@ -323,6 +334,9 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* Home Valuation Modal */}
+      <HomeValuationModal open={homeValuationOpen} onOpenChange={setHomeValuationOpen} />
     </PublicLayout>
   );
 }
