@@ -75,7 +75,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Navigation */}
       <ScrollArea className="flex-1 px-4 py-6">
-        <nav className="space-y-2">
+        <nav className="space-y-1">
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.href || 
               (item.href !== '/admin' && location.pathname.startsWith(item.href));
@@ -91,16 +91,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300",
+                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                     isActive 
-                      ? "bg-gradient-primary text-primary-foreground shadow-glow" 
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground hover:translate-x-1"
+                      ? "bg-primary text-white shadow-md" 
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5", isActive && "animate-pulse-soft")} />
+                  <item.icon className="h-5 w-5" />
                   {item.label}
                   {isActive && (
-                    <Sparkles className="h-3 w-3 ml-auto animate-pulse-soft" />
+                    <span className="ml-auto h-2 w-2 rounded-full bg-white/80" />
                   )}
                 </Link>
               </motion.div>
