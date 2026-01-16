@@ -164,7 +164,7 @@ export default function ListingForm() {
                   <span className="text-sm font-medium">{field.value ? '● Published' : 'Draft'}</span>
                 </div>
               )} />
-              <Button type="submit" className="rounded-full bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-xl transition-all hover-lift">
+              <Button type="submit" className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all">
                 <Save className="h-4 w-4 mr-2" />Save
               </Button>
             </div>
