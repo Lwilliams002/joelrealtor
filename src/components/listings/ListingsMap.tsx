@@ -4,12 +4,23 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Listing } from '@/hooks/useListings';
 import { formatPrice } from '@/lib/formatters';
 import { supabase } from '@/integrations/supabase/client';
+import { Map, Satellite, Mountain } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ListingsMapProps {
   listings: Listing[];
   onListingHover?: (listingId: string | null) => void;
   hoveredListingId?: string | null;
 }
+
+type MapStyle = 'streets' | 'satellite' | 'terrain';
+
+const MAP_STYLES: Record<MapStyle, string> = {
+  streets: 'mapbox://styles/mapbox/streets-v12',
+  satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
+  terrain: 'mapbox://styles/mapbox/outdoors-v12',
+};
 
 export function ListingsMap({ listings, onListingHover, hoveredListingId }: ListingsMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -18,6 +29,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
   const popupRef = useRef<mapboxgl.Popup | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mapStyle, setMapStyle] = useState<MapStyle>('satellite');
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -54,7 +66,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12',
+      style: MAP_STYLES[mapStyle],
       center,
       zoom,
     });
@@ -64,7 +76,7 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
     return () => {
       map.current?.remove();
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, mapStyle]);
 
   // Update markers when listings change
   useEffect(() => {
@@ -183,6 +195,48 @@ export function ListingsMap({ listings, onListingHover, hoveredListingId }: List
   }
 
   return (
-    <div ref={mapContainer} className="w-full h-full" />
+    <div className="relative w-full h-full">
+      <div ref={mapContainer} className="w-full h-full" />
+      
+      {/* Map Style Toggle */}
+      <div className="absolute top-4 right-4 flex bg-background/90 backdrop-blur-sm rounded-lg shadow-lg border border-border overflow-hidden">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setMapStyle('streets')}
+          className={cn(
+            "rounded-none px-3 h-9",
+            mapStyle === 'streets' && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+          )}
+          title="Streets"
+        >
+          <Map className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setMapStyle('satellite')}
+          className={cn(
+            "rounded-none px-3 h-9 border-x border-border",
+            mapStyle === 'satellite' && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+          )}
+          title="Satellite"
+        >
+          <Satellite className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setMapStyle('terrain')}
+          className={cn(
+            "rounded-none px-3 h-9",
+            mapStyle === 'terrain' && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+          )}
+          title="Terrain"
+        >
+          <Mountain className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 }
