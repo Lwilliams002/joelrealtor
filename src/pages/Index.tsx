@@ -3,8 +3,9 @@ import { PublicLayout } from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/ListingCard';
 import { usePublicListings } from '@/hooks/useListings';
-import { ArrowRight, Home, Play, ChevronDown, Search, DollarSign, Building2 } from 'lucide-react';
+import { ArrowRight, Home, ChevronDown, Search, DollarSign, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import joelAguirreImg from '@/assets/joel-aguirre.png';
 
 export default function Index() {
   const { data: listings, isLoading } = usePublicListings({ sortBy: 'newest' });
@@ -158,8 +159,64 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* About Agent Section */}
       <section className="py-24 bg-secondary">
+        <div className="container">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Agent Image */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-[3/4] overflow-hidden shadow-elegant">
+                <img
+                  src={joelAguirreImg}
+                  alt="Joel Aguirre - Real Estate Agent"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              {/* Decorative Element */}
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary -z-10" />
+            </motion.div>
+
+            {/* Agent Info */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-sm uppercase tracking-luxury text-muted-foreground mb-4">About</p>
+              <h2 className="font-display text-4xl md:text-5xl font-semibold mb-6">
+                Joel Aguirre
+              </h2>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  My name is Joel Aguirre, I was born in Vail Colorado and moved here to Albuquerque, New Mexico at the young age of 10 years old. I graduated from West Mesa High School and then went on to pursue my BBA at the University of New Mexico.
+                </p>
+                <p>
+                  In my time at UNM I realized that helping others was something that I enjoyed and came easy to me. Once I graduated from UNM, I knew that I wanted to help people in my community. That is why as one of EXP Albuquerque's Top Producers, I am proud to represent home buyers & sellers in the Albuquerque, Rio Rancho, Santa Fe and surrounding areas.
+                </p>
+                <p>
+                  I have an in-depth knowledge of the market and the skills to help you achieve your real estate needs. My dedication to excellence and commitment to service sets me apart in the competitive real estate market. I would love the opportunity to be your trusted partner in achieving your real estate goals.
+                </p>
+              </div>
+              <Button asChild size="lg" className="btn-primary rounded-none mt-8">
+                <Link to="/contact">
+                  Learn More
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-24 bg-background">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,7 +252,7 @@ export default function Index() {
               {
                 icon: Home,
                 title: 'Home Valuation',
-                description: 'Discover what your home is worth in today\'s market.',
+                description: "Discover what your home is worth in today's market.",
                 link: '/contact',
                 linkText: 'Get Estimate',
               },
