@@ -169,19 +169,20 @@ export default function ImportListings() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0"
           >
-            <TabsList className="rounded-full bg-muted/50 p-1">
-              <TabsTrigger value="csv" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md">
-                <CloudUpload className="h-4 w-4 mr-2" />
-                CSV Upload
+            <TabsList className="rounded-full bg-muted/50 p-1 inline-flex w-auto min-w-max">
+              <TabsTrigger value="csv" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md text-xs sm:text-sm px-3 sm:px-4">
+                <CloudUpload className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="whitespace-nowrap">CSV Upload</span>
               </TabsTrigger>
-              <TabsTrigger value="quick" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md">
-                <Zap className="h-4 w-4 mr-2" />
-                Quick Add
+              <TabsTrigger value="quick" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md text-xs sm:text-sm px-3 sm:px-4">
+                <Zap className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="whitespace-nowrap">Quick Add</span>
               </TabsTrigger>
-              <TabsTrigger value="idx" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md">
-                <LinkIcon className="h-4 w-4 mr-2" />
-                IDX/MLS Feed
+              <TabsTrigger value="idx" className="rounded-full data-[state=active]:bg-background data-[state=active]:shadow-md text-xs sm:text-sm px-3 sm:px-4">
+                <LinkIcon className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="whitespace-nowrap">IDX/MLS Feed</span>
               </TabsTrigger>
             </TabsList>
           </motion.div>

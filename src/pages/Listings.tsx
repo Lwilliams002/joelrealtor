@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ListingFiltersComponent, ListingFilters } from '@/components/listings/ListingFilters';
 import { ListingsMap } from '@/components/listings/ListingsMap';
 import { ListingCardCompact } from '@/components/listings/ListingCardCompact';
 import { usePublicListings } from '@/hooks/useListings';
-import { Building2, LayoutGrid, LayoutList } from 'lucide-react';
+import { Building2, LayoutGrid, LayoutList, Menu, X, Home, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,7 @@ export default function Listings() {
   const [filters, setFilters] = useState<ListingFilters>({});
   const [hoveredListingId, setHoveredListingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: listings, isLoading } = usePublicListings(filters);
 
   return (
@@ -20,13 +22,54 @@ export default function Listings() {
       {/* Minimal Header */}
       <header className="bg-background border-b border-border px-4 py-3 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <a href="/" className="font-display text-xl font-semibold text-foreground">
+          <Link to="/" className="font-display text-xl font-semibold text-foreground">
             Joel Aguirre Realty
-          </a>
+          </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</a>
-            <a href="/listings" className="text-foreground font-medium">Search Listings</a>
-            <a href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">Home</Link>
+            <Link to="/listings" className="text-foreground font-medium">Search Listings</Link>
+            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+          </nav>
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-foreground"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+        
+        {/* Mobile Navigation Menu */}
+        <div className={cn(
+          "md:hidden overflow-hidden transition-all duration-300",
+          isMobileMenuOpen ? "max-h-48 opacity-100 mt-3" : "max-h-0 opacity-0"
+        )}>
+          <nav className="flex flex-col gap-1 py-2 border-t border-border">
+            <Link
+              to="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+            >
+              <Home className="h-4 w-4" />
+              Home
+            </Link>
+            <Link
+              to="/listings"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-foreground bg-muted/50 rounded-lg"
+            >
+              <Building2 className="h-4 w-4" />
+              Search Listings
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+            >
+              <Phone className="h-4 w-4" />
+              Contact
+            </Link>
           </nav>
         </div>
       </header>
