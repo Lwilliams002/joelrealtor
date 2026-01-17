@@ -208,40 +208,43 @@ export default function ListingForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Header */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
             <div className="flex items-center gap-4">
-              <Button type="button" variant="ghost" size="icon" onClick={() => navigate('/admin/listings')} className="rounded-full">
+              <Button type="button" variant="ghost" size="icon" onClick={() => navigate('/admin/listings')} className="rounded-full flex-shrink-0">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <div>
-                <h1 className="font-display text-2xl font-bold text-gradient">{isEditing ? 'Edit Listing' : 'New Listing'}</h1>
-                <p className="text-muted-foreground">{isEditing ? 'Update your property details' : 'Add a new property to your portfolio'}</p>
+              <div className="min-w-0">
+                <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient truncate">{isEditing ? 'Edit Listing' : 'New Listing'}</h1>
+                <p className="text-muted-foreground text-sm truncate">{isEditing ? 'Update your property details' : 'Add a new property to your portfolio'}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <FormField control={form.control} name="published" render={({ field }) => (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-muted/50">
                   <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  <span className="text-sm font-medium">{field.value ? '● Published' : 'Draft'}</span>
+                  <span className="text-xs sm:text-sm font-medium whitespace-nowrap">{field.value ? '● Published' : 'Draft'}</span>
                 </div>
               )} />
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setShowPreview(true)} 
-                className="rounded-full"
+                className="rounded-full text-sm"
+                size="sm"
               >
-                <Eye className="h-4 w-4 mr-2" />Preview
+                <Eye className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden xs:inline">Preview</span>
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSaving}
-                className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all"
+                className="rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-all text-sm"
+                size="sm"
               >
                 {isSaving ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 mr-1 sm:mr-2 animate-spin" />
                 ) : (
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-4 w-4 mr-1 sm:mr-2" />
                 )}
                 {isSaving ? 'Saving...' : 'Save'}
               </Button>
