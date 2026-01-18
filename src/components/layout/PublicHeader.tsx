@@ -11,6 +11,9 @@ export function PublicHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Check if we're on a property detail page (has dark hero)
+  const isPropertyDetail = location.pathname.startsWith('/listings/') && location.pathname !== '/listings';
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -27,12 +30,17 @@ export function PublicHeader() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // On property detail pages and mobile, always show solid header for visibility
+  const showSolidHeader = isScrolled || (isPropertyDetail && typeof window !== 'undefined' && window.innerWidth < 768);
+
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
       isScrolled 
         ? "py-3 bg-white shadow-elegant" 
-        : "py-5 bg-transparent"
+        : isPropertyDetail
+          ? "py-3 md:py-5 bg-white md:bg-transparent shadow-elegant md:shadow-none"
+          : "py-5 bg-transparent"
     )}>
       <div className="container flex items-center justify-between">
         {/* Left Navigation */}
@@ -43,7 +51,7 @@ export function PublicHeader() {
               to={link.href}
               className={cn(
                 "text-sm font-medium uppercase tracking-luxury link-underline transition-colors duration-300",
-                isScrolled
+                isScrolled || isPropertyDetail
                   ? isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   : isActive(link.href) ? "text-white" : "text-white/80 hover:text-white"
               )}
@@ -58,13 +66,13 @@ export function PublicHeader() {
           <div className="text-center">
             <span className={cn(
               "font-display text-2xl md:text-3xl font-semibold tracking-wide transition-colors duration-300",
-              isScrolled ? "text-foreground" : "text-white"
+              isScrolled ? "text-foreground" : isPropertyDetail ? "text-foreground md:text-white" : "text-white"
             )}>
               PRESTIGE
             </span>
             <div className={cn(
               "text-[10px] uppercase tracking-luxury transition-colors duration-300",
-              isScrolled ? "text-muted-foreground" : "text-white/70"
+              isScrolled ? "text-muted-foreground" : isPropertyDetail ? "text-muted-foreground md:text-white/70" : "text-white/70"
             )}>
               Real Estate
             </div>
@@ -77,7 +85,7 @@ export function PublicHeader() {
             to="/contact"
             className={cn(
               "text-sm font-medium uppercase tracking-luxury link-underline transition-colors duration-300",
-              isScrolled
+              isScrolled || isPropertyDetail
                 ? isActive('/contact') ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 : isActive('/contact') ? "text-white" : "text-white/80 hover:text-white"
             )}
@@ -90,7 +98,7 @@ export function PublicHeader() {
               to="/admin"
               className={cn(
                 "text-sm font-medium uppercase tracking-luxury transition-colors duration-300",
-                isScrolled ? "text-foreground" : "text-white"
+                isScrolled || isPropertyDetail ? "text-foreground" : "text-white"
               )}
             >
               Dashboard
@@ -100,7 +108,7 @@ export function PublicHeader() {
               to="/auth"
               className={cn(
                 "text-sm font-medium uppercase tracking-luxury transition-colors duration-300",
-                isScrolled ? "text-foreground" : "text-white"
+                isScrolled || isPropertyDetail ? "text-foreground" : "text-white"
               )}
             >
               Sign In
@@ -112,7 +120,7 @@ export function PublicHeader() {
         <button
           className={cn(
             "md:hidden p-2 transition-colors",
-            isScrolled ? "text-foreground" : "text-white"
+            isScrolled || isPropertyDetail ? "text-foreground" : "text-white"
           )}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
